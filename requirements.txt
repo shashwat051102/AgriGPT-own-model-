@@ -1,0 +1,10 @@
+streamlit
+tensorflow
+numpy
+pillow
+python-dotenv
+langchain-community
+langchain-core
+langchain-openai
+langchain-groq
+openai
