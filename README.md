@@ -69,9 +69,6 @@ streamlit run app.py
    - Enter the plant name
    - (Optional) Provide your email for report delivery
 
-## 📸 Screenshots
-
-[Add screenshots of your application here]
 
 ## 🤝 Contributing
 
