@@ -10,6 +10,7 @@ wikipedia
 langchain-text-splitters
 langchain-openai
 chromadb
+pysqlite3-binary
 sentence_transformers
 langchain_huggingface
 faiss-cpu
