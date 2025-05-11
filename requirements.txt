@@ -32,5 +32,5 @@ pytube
 numexpr
 huggingface_hub
 crewai
-crewai_tools
+crewai[tools]
 xhtml2pdf
