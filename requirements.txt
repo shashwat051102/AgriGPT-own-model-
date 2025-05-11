@@ -32,3 +32,4 @@ numexpr
 huggingface_hub
 crewai
 crewai_tools
+xhtml2pdf
