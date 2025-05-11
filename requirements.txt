@@ -15,6 +15,7 @@ langchain_huggingface
 faiss-cpu
 langchain_chroma
 duckdb
+tensorflow
 pandas
 openai
 langchain-groq
