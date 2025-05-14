@@ -1,3 +1,4 @@
+import patch_sqlite
 import streamlit as st
 from xhtml2pdf import pisa
 import io
