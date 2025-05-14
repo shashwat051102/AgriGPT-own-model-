@@ -7,6 +7,7 @@ bs4
 arxiv
 pymupdf
 wikipedia
+pysqlite3-binary
 langchain-text-splitters
 langchain-openai
 sentence_transformers
