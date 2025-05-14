@@ -22,10 +22,12 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import cassio
+from langchain_openai import ChatOpenAI
+import openai
 
 # Load environment variables
 load_dotenv()
-api_key = os.getenv("GROQ_API_KEY")
+# api_key = os.getenv("GROQ_API_KEY")
 Astra_token = os.getenv("ASTRA_DB_APPLICATION_TOKEN")
 Astra_DB_ID = os.getenv("ASTRA_DB_ID")
 weather_api = os.getenv("WEATHER_API_KEY")
@@ -84,7 +86,14 @@ class AstraSearchTool(BaseTool):
 # Initialize tools and LLM
 astra_tool = AstraSearchTool()
 search = SerperDevTool()
-llm = ChatGroq(api_key=api_key, model="groq/gemma2-9b-it")
+# llm = ChatGroq(api_key=api_key, model="groq/gemma2-9b-it")
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    raise ValueError("OpenAI API key not found in environment variables.")
+
+openai.api_key = api_key
+llm = ChatOpenAI(api_key=api_key, model="gpt-4.1-mini")
+
 
 
 
