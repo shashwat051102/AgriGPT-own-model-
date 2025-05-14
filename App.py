@@ -330,7 +330,7 @@ if uploaded_file is not None:
     st.markdown("---")
     
     st.subheader("📝 Recommended Actions")
-    crew = Crew(agents=[browser_agent], tasks=[browse_task])
+    crew = Crew(agents=[browser_agent], tasks=[browse_task],memory = False)
     result = crew.kickoff({
         'question': predicted_class,
         'predicted_class': predicted_class,
@@ -359,7 +359,7 @@ if uploaded_file is not None:
         )
         
     st.markdown("---")
-    crew_recovery = Crew(agents=[recovery_agent], tasks=[recovery_task])
+    crew_recovery = Crew(agents=[recovery_agent], tasks=[recovery_task],memory = False)
     recovery_result = crew_recovery.kickoff({        
         'question': predicted_class,
         'predicted_class': predicted_class,
