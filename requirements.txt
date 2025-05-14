@@ -4,9 +4,9 @@ ipykernel
 langchain-community
 pypdf
 bs4
-transformers==4.36.2
 tf-keras
-torch==2.1.0
+transformers
+torch
 sentence-transformers
 arxiv
 pymupdf
