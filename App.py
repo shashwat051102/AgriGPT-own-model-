@@ -32,8 +32,8 @@ Astra_token = os.getenv("ASTRA_DB_APPLICATION_TOKEN")
 Astra_DB_ID = os.getenv("ASTRA_DB_ID")
 weather_api = os.getenv("WEATHER_API_KEY")
 
-if not api_key:
-    raise ValueError("GROQ_API_KEY is not set. Please check your .env file.")
+# if not api_key:
+#     raise ValueError("GROQ_API_KEY is not set. Please check your .env file.")
 
 
 
