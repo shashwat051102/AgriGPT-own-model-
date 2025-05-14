@@ -11,6 +11,7 @@ pysqlite3-binary
 langchain-text-splitters
 langchain-openai
 sentence_transformers
+cassio
 langchain_huggingface
 faiss-cpu
 langchain_chroma
