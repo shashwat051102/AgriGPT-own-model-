@@ -24,6 +24,11 @@ from email.mime.multipart import MIMEMultipart
 import cassio
 from langchain_openai import ChatOpenAI
 import openai
+try:
+    import torch
+    torch.classes.__path__ = []
+except Exception:
+    pass
 
 # Load environment variables
 load_dotenv()
