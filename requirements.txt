@@ -1,9 +1,11 @@
 langchain
 python-dotenv
 ipykernel
-tensorflow
 langchain-community
 pypdf
+PyPDF2
+xhtml2pdf
+Markdown
 bs4
 arxiv
 pymupdf
@@ -14,9 +16,12 @@ chromadb
 sentence_transformers
 langchain_huggingface
 faiss-cpu
+crewai[tools]
 langchain_chroma
+ollama
 duckdb
 pandas
+pysqlite3-binary
 openai
 langchain-groq
 duckduckgo-search
