@@ -1,0 +1,4 @@
+.env
+*.h5
+chroma_store/
+__pycache__/
