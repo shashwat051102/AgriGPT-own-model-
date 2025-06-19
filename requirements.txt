@@ -3,6 +3,7 @@ python-dotenv
 ipykernel
 langchain-community
 pypdf
+keras
 PyPDF2
 xhtml2pdf
 Markdown
