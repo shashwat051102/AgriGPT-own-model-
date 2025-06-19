@@ -8,6 +8,7 @@ PyPDF2
 tensorflow
 xhtml2pdf
 Markdown
+cassio
 bs4
 arxiv
 pymupdf
