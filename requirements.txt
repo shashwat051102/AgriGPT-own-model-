@@ -11,6 +11,10 @@ Markdown
 cassio
 bs4
 arxiv
+transformers==4.40.1
+sentence-transformers==2.6.1
+keras<3
+tf-keras
 pymupdf
 wikipedia
 langchain-text-splitters
