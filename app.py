@@ -1,4 +1,3 @@
-import patch_sqlite
 import streamlit as st
 from xhtml2pdf import pisa
 import io
@@ -114,184 +113,355 @@ except Exception as e:
 # UI Starts
 st.set_page_config(page_title="🌿 AgriGPT", page_icon="🌱", layout="wide")
 
-st.title('🌿 AgriGPT')
-st.subheader("Plant Disease Classifier and Agriculture Expert")
+# --- Adaptive Glassmorphism CSS & Animations ---
 st.markdown("""
 <style>
-.card {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(60,60,60,0.07);
-    padding: 1.5rem 1.5rem 1rem 1.5rem;
+:root {
+  --card-bg: rgba(255,255,255,0.82);
+  --card-bg-dark: rgba(30,30,30,0.72);
+  --border: rgba(200,200,200,0.22);
+  --border-dark: rgba(60,60,60,0.32);
+  --shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
+  --shadow-dark: 0 8px 32px 0 rgba(0,0,0,0.28);
+  --accent: #7c3aed;
+  --accent-light: #a5b4fc;
+  --accent-bg: #ede9fe;
+  --accent-bg-dark: #2a213a;
+  --success-bg: #e0f7fa;
+  --success-bg-dark: #1b2b2b;
+  --info-bg: #f3e8ff;
+  --info-bg-dark: #1a2233;
+  --expander-bg: linear-gradient(90deg,#ede9fe 60%,#f3e8ff 100%);
+  --expander-bg-dark: linear-gradient(90deg,#2a213a 60%,#1a2233 100%);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --card-bg: var(--card-bg-dark);
+    --border: var(--border-dark);
+    --shadow: var(--shadow-dark);
+    --accent-bg: var(--accent-bg-dark);
+    --success-bg: var(--success-bg-dark);
+    --info-bg: var(--info-bg-dark);
+    --expander-bg: var(--expander-bg-dark);
+  }
+}
+body { overflow-x: hidden; }
+.glass-card {
+    background: var(--card-bg);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    border: 1px solid var(--border);
+    padding: 1.5rem 1.5rem 1.2rem 1.5rem;
     margin-bottom: 1.5rem;
+    transition: box-shadow 0.3s, transform 0.2s, background 0.3s;
+}
+.glass-card:hover {
+    box-shadow: 0 12px 36px 0 var(--accent);
+    transform: translateY(-2px) scale(1.01);
+}
+.stepper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 0.5rem;
+}
+.step {
+    flex: 1;
+    background: var(--accent-bg);
+    border-radius: 12px;
+    padding: 0.7rem 0.5rem;
+    text-align: center;
+    font-weight: 700;
+    color: var(--accent);
+    border: 2px solid #d1c4e9;
+    position: relative;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, border 0.2s, color 0.2s;
+}
+@media (prefers-color-scheme: dark) {
+  .step {
+    background: var(--accent-bg-dark);
+    border: 2px solid #3a2a4d;
+    color: #a5b4fc;
+  }
+}
+.step.active, .step.completed {
+    background: linear-gradient(90deg,var(--accent-light),var(--accent)11);
+    border: 2px solid var(--accent);
+    color: #222;
+}
+@media (prefers-color-scheme: dark) {
+  .step.active, .step.completed {
+    color: #fff;
+    background: linear-gradient(90deg,#a5b4fc99,var(--accent)33);
+    border: 2px solid var(--accent);
+  }
+}
+.step.completed:after {
+    content: "✓";
+    position: absolute;
+    right: 12px;
+    top: 8px;
+    color: #43a047;
+    font-size: 1.1rem;
 }
 .card-header {
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    color: var(--accent);
     margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
 }
-.card-badge {
-    background: #ffe0b2;
-    color: #b26a00;
+.glass-card-info {
+    background: linear-gradient(90deg,#f3e8ff 60%,#ede9fe 100%);
+}
+@media (prefers-color-scheme: dark) {
+  .glass-card-info {
+    background: linear-gradient(90deg,#2a213a 60%,#1a2233 100%);
+  }
+}
+.glass-card-success {
+    background: linear-gradient(90deg,#e0f7fa 60%,#ede9fe 100%);
+}
+@media (prefers-color-scheme: dark) {
+  .glass-card-success {
+    background: linear-gradient(90deg,#1b2b2b 60%,#2a213a 100%);
+  }
+}
+.sticky-summary {
+    position: sticky;
+    top: 12px;
+    z-index: 10;
+}
+.animated-thankyou {
+    animation: fadeIn 1.2s;
+    background: linear-gradient(90deg,var(--accent-bg) 60%,#e0f7fa 100%);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px var(--accent)22;
+    margin-top: 2rem;
+    padding: 1.5rem 1rem;
+    transition: background 0.3s;
+}
+@media (prefers-color-scheme: dark) {
+  .animated-thankyou {
+    background: linear-gradient(90deg,var(--accent-bg-dark) 60%,#1b2b2b 100%);
+  }
+}
+::-webkit-scrollbar-thumb { background: var(--accent)33; border-radius: 8px;}
+::-webkit-scrollbar { width: 8px;}
+.progress-bar-outer {
+    width: 100%;
+    height: 10px;
+    background: var(--accent-bg);
     border-radius: 8px;
-    padding: 0.2rem 0.7rem;
-    font-size: 0.9rem;
-    margin-left: 0.5rem;
+    margin: 0.7rem 0;
+    box-shadow: none; /* Remove any glow or shadow */
 }
-.card-success {
-    background: #e8f5e9;
-    border-left: 5px solid #43a047;
+@media (prefers-color-scheme: dark) {
+  .progress-bar-outer { background: var(--accent-bg-dark); }
 }
-.card-warning {
-    background: #fffde7;
-    border-left: 5px solid #fbc02d;
+.progress-bar-inner {
+    height: 100%; border-radius: 8px;
+    background: linear-gradient(90deg,var(--accent-light),var(--accent));
+    transition: width 0.4s;
 }
-.card-info {
-    background: #e3f2fd;
-    border-left: 5px solid #1976d2;
+.st-expanderHeader {
+    font-weight: 700 !important;
+    font-size: 1.08rem !important;
+    color: var(--accent) !important;
+    background: var(--expander-bg) !important;
+    border-radius: 10px !important;
+    padding: 0.6rem 1rem !important;
+    margin-bottom: 0.2rem !important;
+    box-shadow: 0 2px 8px #7c3aed22;
 }
-.card-purple {
-    background: #f3e5f5;
-    border-left: 5px solid #8e24aa;
-}
-.card-step {
-    margin-bottom: 0.7rem;
-    padding: 0.7rem 1rem;
-    border-radius: 10px;
-    background: #f9fbe7;
-    border-left: 4px solid #aed581;
+@media (prefers-color-scheme: dark) {
+  .st-expanderHeader {
+    background: var(--expander-bg-dark) !important;
+  }
 }
 </style>
 """, unsafe_allow_html=True)
 
+# --- Sidebar with icons and quick tips ---
 with st.sidebar:
-    st.markdown("### 🌱 Welcome to AgriGPT!")
-    st.markdown("Use this tool to diagnose plant diseases and get expert advice tailored to your location and weather conditions.")
-    location = st.text_input("📍 Enter your location (City, Country):")
-    uploaded_file = st.file_uploader("📷 Upload an image of the plant:", type=["jpg", "png", "jpeg"])
+    st.markdown("## 🌱 **AgriGPT**")
+    st.markdown(
+        "<span style='font-size:1rem; color:var(--accent);'>Diagnose plant diseases and get expert advice tailored to your location and weather.</span>",
+        unsafe_allow_html=True,
+    )
+    st.markdown("---")
+    location = st.text_input("📍 Location:", placeholder="e.g. Nairobi, Kenya", key="loc", help="City, Country")
+    uploaded_file = st.file_uploader("📷 Upload Image", type=["jpg", "png", "jpeg"], key="img", help="Clear close-up of affected area")
+    st.markdown("---")
+    st.markdown(
+        "<span style='font-size:0.95rem; color:var(--accent);'>💡 <b>Tip:</b> For best results, upload a clear image and provide accurate location.</span>",
+        unsafe_allow_html=True,
+    )
 
-if uploaded_file is not None:
-    try:
-        img = Image.open(uploaded_file)
-        img = img.resize((150, 150))  
-        
-        # Convert image to array
-        img_array = np.array(img) / 255.0  
-        img_array = np.expand_dims(img_array, axis=0)  
+# --- Animated Stepper with progress bar ---
+step = 1
+if uploaded_file: step = 2
+if uploaded_file and location: step = 3
+# progress_pct = int((step-1)/2*100)
+# st.markdown(f"""
+# <div class="stepper">
+#     <div class="step {'active' if step==1 else 'completed' if step>1 else ''}">1. Upload Image</div>
+#     <div class="step {'active' if step==2 else 'completed' if step>2 else ''}">2. Location</div>
+#     <div class="step {'active' if step==3 else ''}">3. Results</div>
+# </div>
+# <div class="progress-bar-outer">
+#   <div class="progress-bar-inner" style="width:{progress_pct}%"></div>
+# </div>
+# """, unsafe_allow_html=True)
 
-        # Make prediction
-        predictions = pathogen_model.predict(img_array, verbose=0)
-        predicted_class = class_labels[np.argmax(predictions)]
-        confidence = np.max(predictions) * 100
+# --- Main Card Layout ---
+with st.container():
+    # st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.markdown("### 🌿 Plant Disease Diagnosis")
+    st.write("Upload a plant image and enter your location to get instant diagnosis and recommendations.")
 
-        col1, col2 = st.columns(2)
-        with col1:
-            language = st.sidebar.text_input("🌍 Preferred language for response:", value="en")
-        with col2:
-            name = st.sidebar.text_input("🌿 Name of the plant:")
-            email = st.sidebar.text_input("📧 Enter your email to receive the response:")
-
-        # Initialize weather variables with defaults
-        Temperature = "N/A"
-        Condition = "N/A"
-        Humidity = "N/A"
-        Wind = "N/A"
-        UV_index = "N/A"
-
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            if location and weather_api:
-                with st.spinner("Fetching weather data..."):
-                    data = get_weather(location)
-                    if "error" in data:
-                        st.error(data["error"])
-                    else:
-                        try:
-                            loc = data["location"]
-                            current = data["current"]
-                            condition = current["condition"]
-                            Temperature = current['temp_c']
-                            Condition = condition['text']
-                            Humidity = current['humidity']
-                            Wind = f"{current['wind_kph']} kph {current['wind_dir']}"
-                            UV_index = current['uv']
-
-                            st.markdown(f"### 📍 Weather in {loc['name']}, {loc['country']}")
-                            st.markdown(f"""
-                            - **🌡️ Temperature**: {Temperature}°C (Feels like {current['feelslike_c']}°C)
-                            - **🌤️ Condition**: {Condition}
-                            - **💧 Humidity**: {Humidity}%
-                            - **🌬️ Wind**: {Wind}
-                            - **☀️ UV Index**: {UV_index}
-                            """)
-                        except KeyError as e:
-                            st.error(f"Unexpected weather data format: {e}")
-            else:
-                st.warning("⚠️ Please enter location and ensure weather API is configured.")
-        with col2:
-            st.image(img, caption='Uploaded Image', width=200)
-        with col3:
-            st.success(f"**Predicted Class:** {predicted_class}")
-            st.info(f"**Confidence:** {confidence:.1f}%")
-
-        st.markdown("---")
-        
-        st.subheader("📝 Recommended Actions")
+    if uploaded_file is not None:
         try:
-            crew = Crew(agents=[agriculture_agent], tasks=[diagnosis_task])
-            result = crew.kickoff({
-                'question': predicted_class,
-                'predicted_class': predicted_class,
-                'name': name,
-                'language': language,
-                'Temperature': Temperature,
-                'Condition': Condition,
-                'Humidity': Humidity,
-                'Wind': Wind,
-                'UV_index': UV_index
-            })
-            st.markdown(result, unsafe_allow_html=True)
-            
-            result_str = str(result)
-            
-            # Show download button
-            pdf = create_pdf(result_str)
-            if pdf:
-                st.sidebar.download_button(
-                    label="📄 Download PDF Report",
-                    data=pdf,
-                    file_name=f"{name}_plant_diagnosis.pdf",
-                    mime="application/pdf"
-                )
-                
-            st.markdown("---")
-            crew_recovery = Crew(agents=[recovery_agent], tasks=[recovery_task])
-            recovery_result = crew_recovery.kickoff({        
-                'question': predicted_class,
-                'predicted_class': predicted_class,
-                'name': name,
-                'language': language,
-                'Temperature': Temperature,
-                'Condition': Condition,
-                'Humidity': Humidity,
-                'Wind': Wind,
-                'UV_index': UV_index})
-            st.markdown("### 🌱 Recovery & Fertilizer Advice")
-            st.markdown(recovery_result)
-            
-            if email:
-                if send_email(email, "🌿 AgriGPT Plant Diagnosis Report", result_str):
-                    st.success("📧 Email sent successfully!")
-                else:
-                    st.error("❌ Failed to send email. Please try again.")
-        except Exception as e:
-            st.error(f"Error processing recommendation: {e}")
-            
-    except Exception as e:
-        st.error(f"Error processing image: {e}")
+            img = Image.open(uploaded_file)
+            img = img.resize((150, 150))
+            img_array = np.array(img) / 255.0
+            img_array = np.expand_dims(img_array, axis=0)
 
-st.markdown("---")
-st.markdown("### 🌟 Thank you for using AgriGPT!")
-st.markdown("Feel free to reach out for any feedback or suggestions.")
+            with st.spinner("🔎 Analyzing image..."):
+                progress = st.progress(0)
+                for i in range(1, 101, 10):
+                    progress.progress(i)
+                    import time; time.sleep(0.04)
+                predictions = pathogen_model.predict(img_array, verbose=0)
+                progress.progress(100)
+
+            predicted_class = class_labels[np.argmax(predictions)]
+            confidence = np.max(predictions) * 100
+
+            # --- Advanced Options ---
+            with st.expander("🔧 Advanced Options (customize language, plant name, and get your report by email!)", expanded=True):
+                st.markdown(
+                    "<span style='color:var(--accent);font-size:1rem;'>✨ Personalize your results below!</span>",
+                    unsafe_allow_html=True,
+                )
+                language = st.text_input("🌍 Preferred language:", value="en", help="e.g. en, sw, hi")
+                name = st.text_input("🌿 Plant name:")
+                email = st.text_input("📧 Email for report:")
+
+            # --- Responsive Columns ---
+            col1, col2, col3 = st.columns([1.2,1,1])
+            with col1:
+                if location and weather_api:
+                    with st.spinner("Fetching weather data..."):
+                        data = get_weather(location)
+                        if "error" in data:
+                            st.error(data["error"])
+                        else:
+                            try:
+                                loc = data["location"]
+                                current = data["current"]
+                                condition = current["condition"]
+                                Temperature = current['temp_c']
+                                Condition = condition['text']
+                                Humidity = current['humidity']
+                                Wind = f"{current['wind_kph']} kph {current['wind_dir']}"
+                                UV_index = current['uv']
+                                st.markdown(f"""
+                                <div class="glass-card" style="background:var(--info-bg);">
+                                <div class="card-header">📍 Weather in {loc['name']}, {loc['country']}</div>
+                                <ul>
+                                    <li>🌡️ <b>Temperature:</b> {Temperature}°C (Feels like {current['feelslike_c']}°C)</li>
+                                    <li>🌤️ <b>Condition:</b> {Condition}</li>
+                                    <li>💧 <b>Humidity:</b> {Humidity}%</li>
+                                    <li>🌬️ <b>Wind:</b> {Wind}</li>
+                                    <li>☀️ <b>UV Index:</b> {UV_index}</li>
+                                </ul>
+                                </div>
+                                """, unsafe_allow_html=True)
+                            except KeyError as e:
+                                st.error(f"Unexpected weather data format: {e}")
+                else:
+                    st.warning("⚠️ Please enter location and ensure weather API is configured.")
+
+            with col2:
+                st.image(img, caption='Uploaded Image', use_container_width=True, output_format="PNG")
+                st.markdown('<div style="text-align:center; color:var(--accent); font-size:0.95rem;">Zoom for details</div>', unsafe_allow_html=True)
+            with col3:
+                st.markdown(f"""
+                <div class="glass-card sticky-summary" style="background:var(--success-bg);">
+                    <div class="card-header">🌿 Prediction</div>
+                    <b>Class:</b> <span style="color:var(--accent)">{predicted_class}</span><br>
+                    <b>Confidence:</b> {confidence:.1f}%
+                </div>
+                """, unsafe_allow_html=True)
+
+            st.markdown("---")
+
+            # --- Collapsible Results Section ---
+            with st.expander("📝 Recommended Actions", expanded=True):
+                st.markdown("### 📝 Recommended Actions")
+                try:
+                    crew = Crew(agents=[agriculture_agent], tasks=[diagnosis_task])
+                    result = crew.kickoff({
+                        'question': predicted_class,
+                        'predicted_class': predicted_class,
+                        'name': name,
+                        'language': language,
+                        'Temperature': Temperature,
+                        'Condition': Condition,
+                        'Humidity': Humidity,
+                        'Wind': Wind,
+                        'UV_index': UV_index
+                    })
+                    st.markdown(result, unsafe_allow_html=True)
+                    result_str = str(result)
+
+                    # --- Download PDF Button with icon ---
+                    pdf = create_pdf(result_str)
+                    if pdf:
+                        st.download_button(
+                            label="📄 Download PDF Report",
+                            data=pdf,
+                            file_name=f"{name}_plant_diagnosis.pdf",
+                            mime="application/pdf"
+                        )
+
+                    st.markdown("---")
+                    crew_recovery = Crew(agents=[recovery_agent], tasks=[recovery_task])
+                    recovery_result = crew_recovery.kickoff({
+                        'question': predicted_class,
+                        'predicted_class': predicted_class,
+                        'name': name,
+                        'language': language,
+                        'Temperature': Temperature,
+                        'Condition': Condition,
+                        'Humidity': Humidity,
+                        'Wind': Wind,
+                        'UV_index': UV_index})
+                    st.markdown("### 🌱 Recovery & Fertilizer Advice")
+                    st.markdown(recovery_result)
+
+                    # --- Toast notification for email ---
+                    if email:
+                        if send_email(email, "🌿 AgriGPT Plant Diagnosis Report", result_str):
+                            st.success("📧 Email sent successfully!")
+                        else:
+                            st.error("❌ Failed to send email. Please try again.")
+                except Exception as e:
+                    st.error(f"Error processing recommendation: {e}")
+
+        except Exception as e:
+            st.error(f"Error processing image: {e}")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# --- Animated Thank You Card ---
+st.markdown("""
+<div class="animated-thankyou" style="text-align:center;">
+    <h3>🌟 Thank you for using AgriGPT!</h3>
+    <p>We hope your plants thrive.<br>For feedback or suggestions, reach out anytime.</p>
+</div>
+""", unsafe_allow_html=True)
+
