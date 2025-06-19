@@ -5,6 +5,7 @@ langchain-community
 pypdf
 keras
 PyPDF2
+tensorflow
 xhtml2pdf
 Markdown
 bs4
