@@ -44,7 +44,7 @@ AgriGPT is an intelligent plant disease classification and agricultural advisory
 
 1. **Clone the repository:**
     ```bash
-    git clone https://github.com/yourusername/agrigpt.git
+    git clone [https://github.com/yourusername/agrigpt.git](https://github.com/shashwat051102/AgriGPT-own-model-.git)
     cd agrigpt
     ```
 
